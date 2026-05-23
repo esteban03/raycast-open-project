@@ -9,15 +9,10 @@ import {
   open,
   showToast,
 } from "@raycast/api";
-import { readdir } from "node:fs/promises";
+import { access, readdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { useEffect, useMemo, useState } from "react";
-
-type Preferences = {
-  projectsDirectory: string;
-  editor: string;
-};
 
 type Project = {
   name: string;
@@ -31,9 +26,11 @@ type ProjectUsage = {
   openCount: number;
 };
 
+type EditorValue = Preferences.OpenProject["editor"];
+
 type Editor = {
   title: string;
-  value: string;
+  value: EditorValue;
 };
 
 const USAGE_STORAGE_KEY = "project-usage";
@@ -61,8 +58,8 @@ const EDITORS: Editor[] = [
 ];
 
 export default function Command() {
-  const preferences = getPreferenceValues<Preferences>();
-  const projectsDirectory = expandHome(preferences.projectsDirectory);
+  const preferences = getPreferenceValues<Preferences.OpenProject>();
+  const configuredProjectsDirectory = expandHome(preferences.projectsDirectory);
   const [selectedEditor, setSelectedEditor] = useState(preferences.editor);
   const editor = getEditorApplication(selectedEditor);
 
@@ -71,14 +68,14 @@ export default function Command() {
 
   useEffect(() => {
     LocalStorage.getItem<string>(SELECTED_EDITOR_STORAGE_KEY).then((storedEditor) => {
-      if (storedEditor && EDITORS.some((editor) => editor.value === storedEditor)) {
+      if (isEditorValue(storedEditor)) {
         setSelectedEditor(storedEditor);
       }
     });
   }, []);
 
   useEffect(() => {
-    loadProjects(projectsDirectory)
+    loadProjects(configuredProjectsDirectory)
       .then(setProjects)
       .catch((error) => {
         showToast({
@@ -88,7 +85,7 @@ export default function Command() {
         });
       })
       .finally(() => setIsLoading(false));
-  }, [projectsDirectory]);
+  }, [configuredProjectsDirectory]);
 
   const sortedProjects = useMemo(() => {
     return [...projects].sort((a, b) => {
@@ -123,7 +120,7 @@ export default function Command() {
     );
   }
 
-  async function changeEditor(editor: string) {
+  async function changeEditor(editor: EditorValue) {
     setSelectedEditor(editor);
     await LocalStorage.setItem(SELECTED_EDITOR_STORAGE_KEY, editor);
   }
@@ -133,7 +130,11 @@ export default function Command() {
       isLoading={isLoading}
       searchBarPlaceholder="Search projects"
       searchBarAccessory={
-        <List.Dropdown tooltip="Editor" value={selectedEditor} onChange={changeEditor}>
+        <List.Dropdown
+          tooltip="Editor"
+          value={selectedEditor}
+          onChange={(editor) => changeEditor(editor as EditorValue)}
+        >
           {EDITORS.map((editor) => (
             <List.Dropdown.Item key={editor.value} title={editor.title} value={editor.value} />
           ))}
@@ -192,14 +193,19 @@ function getEditorApplication(editor: string) {
   return editor;
 }
 
+function isEditorValue(editor: string | undefined): editor is EditorValue {
+  return EDITORS.some((availableEditor) => availableEditor.value === editor);
+}
+
 async function loadProjects(projectsDirectory: string): Promise<Project[]> {
   const usage = await getProjectUsage();
-  const entries = await readdir(projectsDirectory, { withFileTypes: true });
+  const readableProjectsDirectory = await getReadableProjectsDirectory(projectsDirectory);
+  const entries = await readdir(readableProjectsDirectory, { withFileTypes: true });
 
   return entries
-    .filter((entry) => entry.isDirectory() && !entry.name.startsWith("."))
+    .filter((entry) => (entry.isDirectory() || entry.isSymbolicLink()) && !entry.name.startsWith("."))
     .map((entry) => {
-      const projectPath = join(projectsDirectory, entry.name);
+      const projectPath = join(readableProjectsDirectory, entry.name);
       const projectUsage = usage[projectPath];
 
       return {
@@ -209,6 +215,17 @@ async function loadProjects(projectsDirectory: string): Promise<Project[]> {
         openCount: projectUsage?.openCount ?? 0,
       };
     });
+}
+
+async function getReadableProjectsDirectory(projectsDirectory: string) {
+  try {
+    await access(projectsDirectory);
+    return projectsDirectory;
+  } catch {
+    const desktopDirectory = join(homedir(), "Desktop");
+    await access(desktopDirectory);
+    return desktopDirectory;
+  }
 }
 
 async function recordProjectUsage(project: Project): Promise<Project> {

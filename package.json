@@ -25,7 +25,7 @@
           "description": "Folder that contains your project folders.",
           "type": "textfield",
           "required": true,
-          "default": "~/Desktop/pro"
+          "default": "~/Projects"
         },
         {
           "name": "editor",
