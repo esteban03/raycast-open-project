@@ -70,16 +70,11 @@ export default function Command() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    LocalStorage.getItem<string>(SELECTED_EDITOR_STORAGE_KEY).then(
-      (storedEditor) => {
-        if (
-          storedEditor &&
-          EDITORS.some((editor) => editor.value === storedEditor)
-        ) {
-          setSelectedEditor(storedEditor);
-        }
-      },
-    );
+    LocalStorage.getItem<string>(SELECTED_EDITOR_STORAGE_KEY).then((storedEditor) => {
+      if (storedEditor && EDITORS.some((editor) => editor.value === storedEditor)) {
+        setSelectedEditor(storedEditor);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -101,10 +96,7 @@ export default function Command() {
         return b.openCount - a.openCount;
       }
 
-      return (
-        (b.lastOpenedAt ?? 0) - (a.lastOpenedAt ?? 0) ||
-        a.name.localeCompare(b.name)
-      );
+      return (b.lastOpenedAt ?? 0) - (a.lastOpenedAt ?? 0) || a.name.localeCompare(b.name);
     });
   }, [projects]);
 
@@ -126,9 +118,7 @@ export default function Command() {
 
     setProjects((currentProjects) =>
       currentProjects.map((currentProject) =>
-        currentProject.path === updatedProject.path
-          ? updatedProject
-          : currentProject,
+        currentProject.path === updatedProject.path ? updatedProject : currentProject,
       ),
     );
   }
@@ -143,17 +133,9 @@ export default function Command() {
       isLoading={isLoading}
       searchBarPlaceholder="Search projects"
       searchBarAccessory={
-        <List.Dropdown
-          tooltip="Editor"
-          value={selectedEditor}
-          onChange={changeEditor}
-        >
+        <List.Dropdown tooltip="Editor" value={selectedEditor} onChange={changeEditor}>
           {EDITORS.map((editor) => (
-            <List.Dropdown.Item
-              key={editor.value}
-              title={editor.title}
-              value={editor.value}
-            />
+            <List.Dropdown.Item key={editor.value} title={editor.title} value={editor.value} />
           ))}
         </List.Dropdown>
       }
@@ -166,28 +148,19 @@ export default function Command() {
           icon={Icon.Folder}
           accessories={[
             {
-              text:
-                project.openCount > 0 ? `${project.openCount} opens` : "New",
+              text: project.openCount > 0 ? `${project.openCount} opens` : "New",
             },
           ]}
           actions={
             <ActionPanel>
-              <Action
-                title="Open Project"
-                icon={Icon.ArrowRight}
-                onAction={() => openProject(project)}
-              />
+              <Action title="Open Project" icon={Icon.ArrowRight} onAction={() => openProject(project)} />
               <ActionPanel.Section title="Editor">
-                <ActionPanel.Submenu title="Change Editor" icon={Icon.Gear}>
+                <ActionPanel.Submenu title="Change Editor…" icon={Icon.Gear}>
                   {EDITORS.map((editor) => (
                     <Action
                       key={editor.value}
                       title={editor.title}
-                      icon={
-                        selectedEditor === editor.value
-                          ? Icon.CheckCircle
-                          : Icon.Code
-                      }
+                      icon={selectedEditor === editor.value ? Icon.CheckCircle : Icon.Code}
                       onAction={() => changeEditor(editor.value)}
                     />
                   ))}
@@ -202,10 +175,7 @@ export default function Command() {
                 />
               </ActionPanel.Section>
               <Action.ShowInFinder path={project.path} />
-              <Action.CopyToClipboard
-                title="Copy Path"
-                content={project.path}
-              />
+              <Action.CopyToClipboard title="Copy Path" content={project.path} />
             </ActionPanel>
           }
         />
