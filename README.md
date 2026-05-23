@@ -2,6 +2,9 @@
 
 Open Project is a Raycast extension for developers who keep their code projects inside a shared folder and want a fast way to open them in their preferred editor.
 
+<img width="1000" height="625" alt="open-project-3" src="https://github.com/user-attachments/assets/49f5ff7a-159c-44ef-a7a5-84add79fc12c" />
+
+
 The extension lists the direct folders inside your projects directory, lets you search them, and opens the selected project in a configurable code editor. It also keeps local usage history so the projects you open most often rise to the top.
 
 ## Features
