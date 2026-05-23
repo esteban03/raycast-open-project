@@ -218,14 +218,8 @@ async function loadProjects(projectsDirectory: string): Promise<Project[]> {
 }
 
 async function getReadableProjectsDirectory(projectsDirectory: string) {
-  try {
-    await access(projectsDirectory);
-    return projectsDirectory;
-  } catch {
-    const desktopDirectory = join(homedir(), "Desktop");
-    await access(desktopDirectory);
-    return desktopDirectory;
-  }
+  await access(projectsDirectory);
+  return projectsDirectory;
 }
 
 async function recordProjectUsage(project: Project): Promise<Project> {
