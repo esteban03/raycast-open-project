@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Editor and local environment files
+.idea
+.vscode
+*.swp
+*.swo
+*.tmp
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

@@ -1,0 +1,126 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "open-project",
+  "title": "Open Project",
+  "description": "Open local project folders in your favorite editor.",
+  "icon": "extension-icon.png",
+  "author": "estebansanchez",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "open-project",
+      "title": "Open Project",
+      "description": "List project folders and open them in your preferred editor.",
+      "mode": "view",
+      "preferences": [
+        {
+          "name": "projectsDirectory",
+          "title": "Projects Directory",
+          "description": "Folder that contains your project folders.",
+          "type": "textfield",
+          "required": true,
+          "default": "~/Desktop/pro"
+        },
+        {
+          "name": "editor",
+          "title": "Editor",
+          "description": "Code editor used to open project folders.",
+          "type": "dropdown",
+          "required": true,
+          "default": "Visual Studio Code",
+          "data": [
+            {
+              "title": "Visual Studio Code",
+              "value": "Visual Studio Code"
+            },
+            {
+              "title": "Cursor",
+              "value": "Cursor"
+            },
+            {
+              "title": "Zed",
+              "value": "Zed"
+            },
+            {
+              "title": "Windsurf",
+              "value": "Windsurf"
+            },
+            {
+              "title": "Antigravity",
+              "value": "Antigravity"
+            },
+            {
+              "title": "IntelliJ IDEA",
+              "value": "IntelliJ IDEA"
+            },
+            {
+              "title": "WebStorm",
+              "value": "WebStorm"
+            },
+            {
+              "title": "PyCharm",
+              "value": "PyCharm"
+            },
+            {
+              "title": "GoLand",
+              "value": "GoLand"
+            },
+            {
+              "title": "PhpStorm",
+              "value": "PhpStorm"
+            },
+            {
+              "title": "CLion",
+              "value": "CLion"
+            },
+            {
+              "title": "Rider",
+              "value": "Rider"
+            },
+            {
+              "title": "RubyMine",
+              "value": "RubyMine"
+            },
+            {
+              "title": "Android Studio",
+              "value": "Android Studio"
+            },
+            {
+              "title": "VSCodium",
+              "value": "VSCodium"
+            },
+            {
+              "title": "Sublime Text",
+              "value": "Sublime Text"
+            },
+            {
+              "title": "Nova",
+              "value": "Nova"
+            },
+            {
+              "title": "System Default",
+              "value": "default"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.95.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/node": "^22.15.3",
+    "eslint": "^8.57.1",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "ray publish"
+  }
+}
